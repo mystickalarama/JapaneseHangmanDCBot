@@ -1,0 +1,87 @@
+{
+  "jlpt5": [
+    {
+      "hiragana": "さくら",
+      "kanji": "桜",
+      "english": "cherry blossom"
+    },
+    {
+      "hiragana": "いぬ",
+      "kanji": "犬",
+      "english": "dog"
+    },
+    {
+      "hiragana": "ねこ",
+      "kanji": "猫",
+      "english": "cat"
+    }
+  ],
+  "jlpt4": [
+    {
+      "hiragana": "あかい",
+      "kanji": "赤い",
+      "english": "red"
+    },
+    {
+      "hiragana": "おおきい",
+      "kanji": "大きい",
+      "english": "big"
+    },
+    {
+      "hiragana": "きれい",
+      "kanji": "綺麗",
+      "english": "beautiful"
+    }
+  ],
+  "jlpt3": [
+    {
+      "hiragana": "たべる",
+      "kanji": "食べる",
+      "english": "to eat"
+    },
+    {
+      "hiragana": "みる",
+      "kanji": "見る",
+      "english": "to see"
+    },
+    {
+      "hiragana": "かく",
+      "kanji": "書く",
+      "english": "to write"
+    }
+  ],
+  "jlpt2": [
+    {
+      "hiragana": "べんきょう",
+      "kanji": "勉強",
+      "english": "study"
+    },
+    {
+      "hiragana": "しごと",
+      "kanji": "仕事",
+      "english": "work"
+    },
+    {
+      "hiragana": "おとうさん",
+      "kanji": "お父さん",
+      "english": "father"
+    }
+  ],
+  "jlpt1": [
+    {
+      "hiragana": "あんぜん",
+      "kanji": "安全",
+      "english": "safety"
+    },
+    {
+      "hiragana": "けんこう",
+      "kanji": "健康",
+      "english": "health"
+    },
+    {
+      "hiragana": "しんり",
+      "kanji": "心理",
+      "english": "psychology"
+    }
+  ]
+}
