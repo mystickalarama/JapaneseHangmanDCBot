@@ -4,6 +4,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  MessageFlags,
 } = require("discord.js");
 const fs = require("fs");
 require("dotenv").config();
@@ -17,6 +18,7 @@ const client = new Client({
 });
 
 const words = JSON.parse(fs.readFileSync("words.json", "utf8"));
+const games = new Map();
 
 function startGame(level) {
   const wordList = words[level];
@@ -35,40 +37,27 @@ client.once("ready", () => {
   console.log(`Bot logged in as ${client.user.tag}!`);
 });
 
-const games = new Map();
-
 client.on("messageCreate", async (message) => {
+  if (message.author.bot) return;
+
   if (message.content === "!start-hangman") {
     const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("jlpt5")
-        .setLabel("JLPT 5")
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId("jlpt4")
-        .setLabel("JLPT 4")
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId("jlpt3")
-        .setLabel("JLPT 3")
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId("jlpt2")
-        .setLabel("JLPT 2")
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId("jlpt1")
-        .setLabel("JLPT 1")
-        .setStyle(ButtonStyle.Primary)
+      ["jlpt5", "jlpt4", "jlpt3", "jlpt2", "jlpt1"].map((level) =>
+        new ButtonBuilder()
+          .setCustomId(level)
+          .setLabel(level.toUpperCase().replace("JLPT", "JLPT "))
+          .setStyle(ButtonStyle.Primary)
+      )
     );
 
     await message.reply({
       content: "Please select a level to start the game:",
       components: [row],
     });
-  } else if (message.content.startsWith("!guess ") && !message.author.bot) {
+  } else if (message.content.startsWith("!guess ")) {
     const game = games.get(message.channel.id);
-    if (!game) return;
+    if (!game)
+      return message.reply("No active game. Start one with `!start-hangman`.");
 
     const letter = message.content.split(" ")[1];
     if (!letter || game.guessedLetters.includes(letter)) return;
@@ -87,46 +76,45 @@ client.on("messageCreate", async (message) => {
     if (game.hiddenWord === game.word) {
       games.delete(message.channel.id);
       return message.reply(
-        `YOU WON! 🎉 The word was **${game.word}** (**${game.kanji}**) - ${game.english}`
+        `🎉 **YOU WON!** The word was **${game.word}** (**${game.kanji}**) - ${game.english}`
       );
     }
 
     if (game.wrongGuesses >= 10) {
       games.delete(message.channel.id);
       return message.reply(
-        `YOU LOST! ❌ The word was **${game.word}** (**${game.kanji}**) - ${game.english}`
+        `❌ **YOU LOST!** The word was **${game.word}** (**${game.kanji}**) - ${game.english}`
       );
     }
 
     await message.reply(
-      `Current word: ${game.hiddenWord} | Wrong guesses: ${game.wrongGuesses}/10`
+      `**Current word:** ${game.hiddenWord}\n❌ Wrong guesses: ${game.wrongGuesses}/10`
     );
   }
 });
 
-// Buton etkileşimlerini işlemek için event handler
 client.on("interactionCreate", async (interaction) => {
-  try {
-    if (!interaction.isButton()) return;
+  if (!interaction.isButton()) return;
 
-    console.log("Buton etkileşimi alındı:", interaction.customId);
+  try {
+    console.log("Button interaction received:", interaction.customId);
 
     const gameData = startGame(interaction.customId);
     games.set(interaction.channelId, gameData);
 
     await interaction.reply({
-      content: `Game started! Guess the word: ${gameData.hiddenWord}\nUse \`!guess [letter]\` to play.`,
-      ephemeral: false,
+      content: `🎮 **Game started!** Guess the word: ${gameData.hiddenWord}\nUse \`!guess [letter]\` to play.`,
+      flags: MessageFlags.Ephemeral,
     });
   } catch (error) {
-    console.error("Etkileşim hatası:", error);
+    console.error("Interaction error:", error);
     try {
       await interaction.reply({
-        content: "Bir hata oluştu. Lütfen tekrar deneyin.",
-        ephemeral: true,
+        content: "⚠️ An error occurred. Please try again.",
+        flags: MessageFlags.Ephemeral,
       });
     } catch (e) {
-      console.error("Hata yanıtı gönderilemedi:", e);
+      console.error("Failed to send error response:", e);
     }
   }
 });
